@@ -1,0 +1,94 @@
+{% extends 'video.twig' %}
+
+{% block content %}
+    <div class="bd" id="content">
+
+        <!-- 专家列表 -->
+        {% if experts is not empty %}
+            <div class="weui_panel weui_panel_access">
+                <div class="weui_panel_hd">{{ expert_list }}</div>
+                <div class="weui_panel_bd">
+                    {% for expert in experts %}
+                        <a href="{{ expert.linkurl }}" class="weui_media_box weui_media_appmsg">
+                            <div class="weui_media_hd">
+                                <img class="weui_media_appmsg_thumb" src="{{ expert.headimgurl }}" alt="">
+                            </div>
+                            <div class="weui_media_bd">
+                                <h4 class="weui_media_title">{{ expert.title }}</h4>
+
+                                <p class="weui_media_desc">{{ expert.desc }}</p>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- 公开课列表 -->
+        {% if videos is not empty %}
+            <div class="weui_panel weui_panel_access">
+                <div class="weui_panel_hd">{{ video_list }}</div>
+                <div class="weui_panel_bd">
+                    {% for video in videos %}
+                        <div class="weui_media_box weui_media_text">
+                            <h4 class="weui_media_title">{{ video.title }}</h4>
+                            {% if video.live == 0 %}
+                                <p class="video">
+                                    <iframe frameborder="0" src="{{ video.url }}" allowfullscreen></iframe>
+                                </p>
+                            {% else %}
+                                <a href="{{ liveurl }}">
+                                    <h5>正在直播</h5>
+                                </a>
+                                <div id="wrapper">
+                                    <div class="px-video-container" id="{{ video.id }}">
+                                        <div class="px-video-img-captions-container">
+                                            <div class="px-video-captions hide"></div>
+
+                                            <video width="100%" height="100%" poster="{{ video.poster }}" controls>
+                                                <source src="{{ video.url }}" type="video/mp4"/>
+                                            </video>
+                                        </div>
+                                        <div class="px-video-controls"></div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <ul class="weui_media_info">
+                                {% for tag in video.tags %}
+                                    <li class="weui_media_info_meta"><a href="{{ tag.url }}">{{ tag.name }}</a></li>
+                                {% endfor %}
+                                <li class="weui_media_info_meta weui_media_info_meta_extra"><a
+                                            href="{{ video.author_url }}">{{ video.author }}</a></li>
+                            </ul>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- 文章列表 -->
+        {% if articles is not empty %}
+            <div class="weui_panel">
+                <div class="weui_panel_hd">{{ article_list }}</div>
+                <div class="weui_panel_bd">
+                    {% for article in articles %}
+                        <div class="weui_media_box weui_media_text">
+                            <a href="{{ article.url }}">
+                                <h4 class="weui_media_title">{{ article.title }}</h4>
+
+                                <p class="weui_media_desc">{{ article.desc }}</p>
+                            </a>
+                            <ul class="weui_media_info">
+                                {% for tag in article.tags %}
+                                    <li class="weui_media_info_meta"><a href="{{ tag.url }}">{{ tag.name }}</a></li>
+                                {% endfor %}
+                                <li class="weui_media_info_meta weui_media_info_meta_extra"><a
+                                            href="{{ article.author_url }}">{{ article.author }}</a></li>
+                            </ul>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

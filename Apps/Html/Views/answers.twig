@@ -1,0 +1,27 @@
+{% extends "expert.twig" %}
+
+{% block content %}
+    <div class="bd" id="content">
+        <div class="weui_panel">
+            <div class="weui_panel_hd">{{ article_list }}</div>
+            <div class="weui_panel_bd">
+                {% for article in articles %}
+                    <div class="weui_media_box weui_media_text">
+                        <a href="{{ article.url }}">
+                            <h4 class="weui_media_title">{{ article.title }}</h4>
+
+                            <p class="weui_media_desc">{{ article.desc }}</p>
+                        </a>
+                        <ul class="weui_media_info">
+                            {% for tag in article.tags %}
+                                <li class="weui_media_info_meta"><a href="{{ tag.url }}">{{ tag.name }}</a></li>
+                            {% endfor %}
+                            <li class="weui_media_info_meta weui_media_info_meta_extra"><a
+                                        href="{{ article.author_url }}">{{ article.author }}</a></li>
+                        </ul>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

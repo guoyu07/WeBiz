@@ -1,0 +1,95 @@
+{% extends 'expert.twig' %}
+
+{% block body_html %}
+    <div class="hd">
+        <h1 class="page_title">{{ price }}</h1>
+        <p class="page_desc">专家一对一服务</p>
+    </div>
+    <div class="weui_cells_title">订单详情</div>
+    <div class="weui_cells">
+        <div class="weui_cell">
+            <div class="weui_cell_bd weui_cell_primary">
+                <p>预约专家</p>
+            </div>
+            <div class="weui_cell_ft">{{ name }}</div>
+        </div>
+        <div class="weui_cell">
+            <div class="weui_cell_bd weui_cell_primary">
+                <p>专家职称</p>
+            </div>
+            <div class="weui_cell_ft">{{ jobtitle }}</div>
+        </div>
+        <div class="weui_cell">
+            <div class="weui_cell_bd weui_cell_primary">
+                <p>预约项目</p>
+            </div>
+            <div class="weui_cell_ft">{{ service }}</div>
+        </div>
+        <div class="weui_cell">
+            <div class="weui_cell_bd weui_cell_primary">
+                <p>预约时间</p>
+            </div>
+            <div class="weui_cell_ft">{{ service_time }}</div>
+        </div>
+    </div>
+    <br/>
+
+    <div class="bd spacing">
+        <a href="javascript:;" class="weui_btn weui_btn_primary" onclick="callpay()">立即挂号</a>
+    </div>
+
+    <div id="toast" style="display: none;" onclick="returnFailureUrl()">
+        <div class="weui_mask_transparent"></div>
+        <div class="weui_toast">
+            <i class="weui_icon_toast_failure"></i>
+            <p class="weui_toast_content">支付未成功</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        function jsApiCall() {
+            WeixinJSBridge.invoke(
+                    'getBrandWCPayRequest',
+                    {{ jsApiParameters|raw }},
+                    function (res) {
+                        WeixinJSBridge.log(res.err_msg);
+                        if (res.err_msg == "get_brand_wcpay_request:ok") {
+                            // message: "微信支付成功!"
+                            sendOrder({{ order.client }},{{ order.expert }}, {{ order.time }});
+                            WeixinJSBridge.call('closeWindow');
+                        } else {
+                            // message: "已取消微信支付!"
+                            if (showdiv_display = document.getElementById('toast').style.display == 'none') {//如果show是隐藏的
+                                document.getElementById('toast').style.display = 'block';//show的display属性设置为block（显示）
+                            }
+                        }
+                    }
+            );
+        }
+
+        function sendOrder(client, expert, time) {
+            xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("GET", "index.php?c=action&client=" + client + "&expert=" + expert + '&time=' + time, true);
+            xmlhttp.send();
+        }
+
+        function returnFailureUrl() {
+            window.location.replace("{{ failure_url }}");
+        }
+
+        function callpay() {
+            if (typeof WeixinJSBridge == "undefined") {
+                if (document.addEventListener) {
+                    document.addEventListener('WeixinJSBridgeReady', jsApiCall, false);
+                } else if (document.attachEvent) {
+                    document.attachEvent('WeixinJSBridgeReady', jsApiCall);
+                    document.attachEvent('onWeixinJSBridgeReady', jsApiCall);
+                }
+            } else {
+                jsApiCall();
+            }
+        }
+    </script>
+{% endblock %}

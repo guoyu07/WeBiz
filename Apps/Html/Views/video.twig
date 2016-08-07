@@ -1,0 +1,64 @@
+{% extends 'expert.twig' %}
+
+{% block content %}
+    <div class="bd" id="content">
+        <div class="weui_panel weui_panel_access">
+            <div class="weui_panel_hd">{{ video_list }}</div>
+            <div class="weui_panel_bd">
+                {% for video in videos %}
+                    <div class="weui_media_box weui_media_text">
+                        <h4 class="weui_media_title">{{ video.title }}</h4>
+                        {% if video.live == 0 %}
+                            <p class="video">
+                                <iframe frameborder="0" src="{{ video.url }}" allowfullscreen></iframe>
+                            </p>
+                        {% else %}
+                            <a href="{{ liveurl }}">
+                                <i class="iconfont">&#xe713;</i>
+                                <em class="live-video">正在直播</em>
+                            </a>
+                            <div class="video-wrapper">
+                                <div class="px-video-container" id="{{ video.id }}">
+                                    <div class="px-video-img-captions-container">
+                                        <div class="px-video-captions hide"></div>
+
+                                        <video width="100%" height="100%" poster="{{ video.poster }}" controls>
+                                            <source src="{{ video.url }}" type="video/mp4"/>
+                                        </video>
+                                    </div>
+                                    <div class="px-video-controls"></div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <ul class="weui_media_info">
+                            {% for tag in video.tags %}
+                                <li class="weui_media_info_meta"><a href="{{ tag.url }}">{{ tag.name }}</a></li>
+                            {% endfor %}
+                            <li class="weui_media_info_meta weui_media_info_meta_extra"><a
+                                        href="{{ video.author_url }}">{{ video.author }}</a></li>
+                        </ul>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block other_script %}
+    <script src="../../../Assets/js/px-video.js"></script>
+    <script src="../../../Assets/js/strings.js"></script>
+    <script>
+        {% for video in videos %}
+        {% if video.live == 1 %}
+        // Initialize
+        new InitPxVideo({
+            "videoId": "{{ video.id }}",
+            "captionsOnDefault": true,
+            "seekInterval": 20,
+            "videoTitle": "{{ video.title }}",
+            "debug": false
+        });
+        {% endif %}
+        {% endfor %}
+    </script>
+{% endblock %}
