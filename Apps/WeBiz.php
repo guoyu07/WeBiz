@@ -12,7 +12,7 @@ class Router
         spl_autoload_register(array(__CLASS__, 'autoload'));
 
         //判断是微信访问还是网页访问并启动不同的控制器
-        $controller = WxResponse::check() ? new Weixin() : new Html();
+        $controller = self::checkSignature() ? new Weixin() : new Html();
         $controller->start();
     }
 
@@ -24,13 +24,35 @@ class Router
         }
 
         //设定类后缀名
-        $suffix = array('.class.php', '.php', '.inc');
+        $suffix = array('.class.php', '.php');
         foreach ($suffix as $s) {
             $file = $class . $s;
             if (file_exists($file)) {
                 require_once $file;
                 return;
             }
+        }
+    }
+
+    //检查签名
+    private static function checkSignature()
+    {
+        if (!empty($_GET['signature'])) {
+            $signature = $_GET["signature"];
+            $timestamp = $_GET["timestamp"];
+            $nonce = $_GET["nonce"];
+            $token = WxConfig::WEIXIN_TOKEN;
+            $tmpArr = array($token, $timestamp, $nonce);
+            sort($tmpArr, SORT_STRING);
+            $tmpStr = implode($tmpArr);
+            $tmpStr = sha1($tmpStr);
+            if ($tmpStr == $signature) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
         }
     }
 }
