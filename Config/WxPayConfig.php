@@ -24,10 +24,19 @@ class WxPayConfig
      * 获取地址：https://mp.weixin.qq.com/advanced/advanced?action=dev&t=advanced/dev&token=2005451881&lang=zh_CN
      * @var string
      */
+
     const APPID = '';
+    const APPSECRET = '';
     const MCHID = '';
     const KEY = '';
-    const APPSECRET = '';
+
+    //=======【回调网址配置】===================================
+
+    const NOTIFY_URL = ''; //回调函数URL
+    const SUBSCRIBE_URL = ''; //提示关注微信号URL
+    const FAILURE_CALL_BACK_URL = ''; //支付失败后的跳转URL
+    const ORDER_SHARE_URL = ''; //订单页面微信分享时的链接
+    const SUCCESS_CALL_BACK_URL = ''; //支付成功后的跳转URL
 
     //=======【证书路径设置】=====================================
     /**
@@ -38,13 +47,6 @@ class WxPayConfig
      */
     const SSLCERT_PATH = ROOT . 'Assets' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . 'apiclient_cert.pem';
     const SSLKEY_PATH = ROOT . 'Assets' . DIRECTORY_SEPARATOR . 'cert' . DIRECTORY_SEPARATOR . 'apiclient_key.pem';
-
-    //=======【回调网址配置】===================================
-
-    const NOTIFY_URL = ''; //回调函数URL
-    const SUBSCRIBE_URL = ''; //提示关注微信号URL
-    const FAILURE_CALL_BACK_URL = ''; //支付失败后的跳转URL
-    const ORDER_SHARE_URL = ''; //订单页面微信分享时的链接
 
     //=======【curl代理设置】===================================
     /**

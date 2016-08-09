@@ -2,14 +2,15 @@
 
 namespace Common\Weixin;
 
-use Common\Drivers\DataInCache;
+use Common\Libs\Http;
+use Common\Log\Log;
 
-class WeixinBase implements DataInCache
+class WeixinBase
 {
     protected static $weixin = null;
     protected static $instance = null;
-    private $_appid;
-    private $_appsecret;
+    protected $_appid;
+    protected $_appsecret;
 
     private function __construct()
     {
@@ -64,7 +65,7 @@ class WeixinBase implements DataInCache
     //微信服务器反馈信息处理
     protected function feedback($post)
     {
-        $result = call_user_func_array(['Common\Libs\Http', 'request'], $post);
+        $result = Http::request($post);
         $result = json_decode($result, true);
         if (!empty($result['errcode'])) {
             $data = is_string($post) ? $post : json_encode($post, JSON_UNESCAPED_UNICODE);
@@ -72,12 +73,19 @@ class WeixinBase implements DataInCache
             $this->logError($log);
             $errorno = array(40001, 40014, 42001, 42007);
             if (in_array(intval($result['errcode']), $errorno)) {
-                preg_match('/access_token=([\w\-]+)&?/', $post['url'], $old);
-                $post['url'] = str_replace($old[1], self::$instance->getAccessToken(true), $post['url']);
+                $pattern = '/access_token=([\w\-]+)(&|$)/';
+                $replacement = '\${1}' . self::$instance->getAccessToken(true);
+                $post['url'] = preg_replace($pattern, $replacement, $post['url']);
                 $result = $this->feedback($post);
             }
         }
         return $result;
+    }
+
+    protected function logError($msg)
+    {
+        $log = Log::Init(LOG_DIR . DIRECTORY_SEPARATOR . 'wechat_errors.log');
+        Log::WARN($msg);
     }
 
     public function close()

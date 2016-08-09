@@ -2,9 +2,8 @@
 
 namespace Apps\Html\Controllers;
 
-use Common\WxPay\CLogFileHandler;
 use Common\WxPay\JsApiPay;
-use Common\WxPay\Log;
+use Common\Log\Log;
 use Common\WxPay\WxPayApi;
 use Common\WxPay\WxPayUnifiedOrder;
 use Config\WxPayConfig;
@@ -17,8 +16,7 @@ class OrderController extends CommonController
     public function start()
     {
         //初始化日志
-        $logHandler = new CLogFileHandler(WXPAY_LOG_DIR . DIRECTORY_SEPARATOR . date('Y-m-d') . '.log');
-        $log = Log::Init($logHandler, 15);
+        $log = Log::Init(WXPAY_LOG_DIR . DIRECTORY_SEPARATOR . date('Y-m-d') . '.log', 15);
         Log::DEBUG("begin notify: order");
         echo $this->output();
     }

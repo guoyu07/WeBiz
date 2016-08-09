@@ -2,7 +2,7 @@
 
 namespace Config;
 
-class WxConfig
+class AppConfig
 {
     //用户身份定义
     const USER_ADMIN = 100;
@@ -14,4 +14,13 @@ class WxConfig
     const COMMAND_IMAGE = '#'; //发送图片消息命令符
     const COMMAND_VOICE = '%'; //发送语音消息命令符
     const ALLOW_ONE_ON_ONE = true; //是否启用客服一对一模式
+
+    //微信Token
+    const WEIXIN_TOKEN = 'weixin';
+
+    //百度开发平台access_token
+    const BAIDU_AK = '';
+
+    //腾讯开放平台access_token
+    const TENCENT_AK = '';
 }

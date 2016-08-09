@@ -2,7 +2,7 @@
 
 namespace Common\Logs;
 
-abstract class WeBizException extends \Exception
+class WeBizException extends \Exception
 {
 
 }

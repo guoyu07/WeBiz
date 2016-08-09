@@ -2,6 +2,8 @@
 
 namespace Common\Drivers;
 
+use Common\Log\Log;
+
 class Database
 {
 
@@ -397,10 +399,9 @@ class Database
     }
 
     //记录错误日志
-    protected function logError($content)
+    protected function logError($msg)
     {
-        $logfile = LOG_DIR . DIRECTORY_SEPARATOR . 'db_errors.log';
-        if (!file_exists($logfile)) fopen($logfile, "w");
-        error_log(date("[Y-m-d H:i:s]") . $content . "\n", 3, $logfile);
+        $log = Log::Init(LOG_DIR . DIRECTORY_SEPARATOR . 'db_errors.log');
+        Log::WARN($msg);
     }
 }

@@ -8,20 +8,6 @@ abstract class WxAdvance
 
     abstract protected function feedback($post);
 
-    //获取access_token
-    protected function _getAccessToken($appid, $appsecret)
-    {
-        $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' . $appid . '&secret=' . $appsecret;
-        return $url;
-    }
-
-    //获取jsapi_ticket
-    protected function _getJsApiTicket()
-    {
-        $url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=" . $this->getAccessToken() . "&type=jsapi";
-        return $url;
-    }
-
     //获取单个用户基本信息
     protected function _getUserInfo($openid)
     {

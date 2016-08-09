@@ -2,8 +2,6 @@
 
 namespace Common\Weixin;
 
-use Config\WxConfig;
-
 class WxResponse
 {
     public static function response($postObj, $content, $type)
@@ -26,11 +24,6 @@ class WxResponse
                 break;
         }
         return $result;
-    }
-
-    public static function check()
-    {
-        return self::checkSignature();
     }
 
     //被动回复文本消息
@@ -125,29 +118,5 @@ class WxResponse
  				   </xml>";
         $result = sprintf($xmlTpl, $postObj->FromUserName, $postObj->ToUserName, time());
         return $result;
-    }
-
-    //检查签名
-    private static function checkSignature()
-    {
-        if (!empty($_GET['signature'])) {
-            $signature = $_GET["signature"];
-            $timestamp = $_GET["timestamp"];
-            $nonce = $_GET["nonce"];
-
-            $token = WxConfig::WEIXIN_TOKEN;
-            $tmpArr = array($token, $timestamp, $nonce);
-            sort($tmpArr, SORT_STRING);
-            $tmpStr = implode($tmpArr);
-            $tmpStr = sha1($tmpStr);
-
-            if ($tmpStr == $signature) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
     }
 }

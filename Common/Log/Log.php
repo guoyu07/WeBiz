@@ -1,6 +1,6 @@
 <?php
 
-namespace Common\Libs;
+namespace Common\Log;
 //以下为日志
 
 class Log
@@ -18,10 +18,11 @@ class Log
     {
     }
 
-    public static function Init($handler = null, $level = 15)
+    public static function Init($logfile, $level = 15)
     {
         if (!self::$instance instanceof self) {
             self::$instance = new self();
+            $handler = new CLogFileHandler($logfile);
             self::$instance->__setHandle($handler);
             self::$instance->__setLevel($level);
         }

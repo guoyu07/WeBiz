@@ -1,6 +1,6 @@
 <?php
 
-namespace Common\WxPay;
+namespace Common\Log;
 
 
 interface ILogHandler

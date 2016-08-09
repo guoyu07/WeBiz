@@ -107,7 +107,7 @@ class UserModel extends CommonModel
 
     public function transfer(array $user_info, $postObj, $to_userid)
     {
-        $this->sendMessage($to_userid, WxConstants::MSGTYPE_TEXT, $user_info['nickname'] . '：');
+        //$this->sendMessage($to_userid, WxConstants::MSGTYPE_TEXT, $user_info['nickname'] . '：');
         $result = $this->weixin->transfer($postObj, $this->getOpenidByUserid($to_userid));
         if (!empty($result['errcode'])) {
             return array('type' => WxConstants::MSGTYPE_TEXT, 'content' => '未能成功转发, 按照微信的要求, 只能发送语音、文字和图片, 其他格式的内容不可以发送哦');

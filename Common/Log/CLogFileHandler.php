@@ -1,6 +1,6 @@
 <?php
 
-namespace Common\WxPay;
+namespace Common\Log;
 
 
 class CLogFileHandler implements ILogHandler
