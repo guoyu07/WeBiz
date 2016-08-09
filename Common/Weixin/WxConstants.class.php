@@ -2,6 +2,8 @@
 
 namespace Common\Weixin;
 
+use Common\Libs\Config;
+
 class WxConstants
 {
     //微信消息类型

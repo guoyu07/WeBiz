@@ -88,8 +88,12 @@ class WxResponse
                     <Url><![CDATA[%s]]></Url>
                     </item>";
         $item_str = "";
-        foreach ($newsArray as $item) {
-            $item_str .= sprintf($itemTpl, $item['title'], $item['description'], $item['picUrl'], $item['url']);
+        if (array_key_exists(0, $newsArray)) {
+            foreach ($newsArray as $item) {
+                $item_str .= sprintf($itemTpl, $item['title'], $item['description'], $item['picUrl'], $item['url']);
+            }
+        } else {
+            $item_str .= sprintf($itemTpl, $newsArray['title'], $newsArray['description'], $newsArray['picUrl'], $newsArray['url']);
         }
         $newsTpl = "<xml>
                     <ToUserName><![CDATA[%s]]></ToUserName>

@@ -6,8 +6,6 @@ abstract class WxAdvance
 {
     abstract protected function getAccessToken();
 
-    abstract protected function feedback($post);
-
     //获取单个用户基本信息
     protected function _getUserInfo($openid)
     {
@@ -77,7 +75,7 @@ abstract class WxAdvance
         $msg = array('touser' => $touser);
         $msg['msgtype'] = $type;
         $data = trim($data);
-        $msg['msgtype'] == WxConstants::MSGTYPE_TEXT ? $msg[$type] = array('content' => urlencode($data)) : $msg[$type] = array('media_id' => urlencode($data));
+        $msg[$type] = $msg['msgtype'] == WxConstants::MSGTYPE_TEXT ? array('content' => urlencode($data)) : array('media_id' => urlencode($data));
         $url = 'https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=' . $this->getAccessToken();
         $msg = urldecode(json_encode($msg));
         return array('url' => $url, 'data' => $msg);
