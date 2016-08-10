@@ -5,7 +5,7 @@ namespace Common\Weixin;
 use Common\Libs\Http;
 use Common\Log\Log;
 
-class WeixinBase
+class WeixinBase extends WxApi
 {
     protected static $weixin = null;
     protected static $instance = null;
@@ -184,7 +184,7 @@ class WeixinBase
             $errorno = array(40001, 40014, 42001, 42007);
             if (in_array(intval($result['errcode']), $errorno)) {
                 $pattern = '/access_token=([\w\-]+)(&|$)/';
-                $replacement = '\${1}' . self::$instance->getAccessToken(true);
+                $replacement = '\${1}' . $this->getAccessToken(true);
                 $post['url'] = preg_replace($pattern, $replacement, $post['url']);
                 $result = $this->feedback($post);
             }

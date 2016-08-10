@@ -2,8 +2,10 @@
 
 namespace Common\Weixin;
 
-class WxApi extends WxAdvance
+abstract class WxApi extends WxAdvance
 {
+    abstract protected function feedback($post);
+
     //获取单个用户微信基本信息
     public function getUser($openid)
     {
