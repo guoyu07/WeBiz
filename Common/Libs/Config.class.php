@@ -4,7 +4,7 @@ namespace Common\Libs;
 
 class Config
 {
-    public static function getConstants($class, $prefix = null, $namespace = 'Config')
+    public static function getConfig($class, $prefix = null, $namespace = 'Config')
     {
         $class = $namespace . '\\' . $class;
         if (class_exists($class)) {

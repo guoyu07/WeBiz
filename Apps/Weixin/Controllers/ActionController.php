@@ -7,13 +7,6 @@ use Common\Weixin\WxConstants;
 
 class ActionController
 {
-    protected $user;
-
-    public function __construct()
-    {
-        $this->user = new UserModel();
-    }
-
     public function doAction($data)
     {
         $method = strtolower(is_string($data) ? $data : $data['action']);

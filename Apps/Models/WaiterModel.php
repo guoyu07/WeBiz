@@ -11,7 +11,7 @@ class WaiterModel extends CommonModel
             $where .= 'AND userid <> ' . $old_waiter_id;
             $this->set($old_waiter_id, array('status' => 0));
         }
-        $waiter = $this->db->doSql('SELECT (' . $where . ') AS waiterid, count(*) AS count FROM ' . $this->getTableName('user') . " GROUP BY 'waiterid' ORDER BY count ASC LIMIT 1");
+        $waiter = self::$db->doSql('SELECT (' . $where . ') AS waiterid, count(*) AS count FROM ' . $this->getTableName('user') . " GROUP BY 'waiterid' ORDER BY count ASC LIMIT 1");
         return is_array($waiter) ? $waiter[0]['waiterid'] : $waiter;
     }
 }

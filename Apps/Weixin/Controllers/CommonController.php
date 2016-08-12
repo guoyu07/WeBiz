@@ -2,21 +2,11 @@
 
 namespace Apps\Weixin\Controllers;
 
-use Common\Libs\Functions;
 use Common\Weixin\WxConstants;
 use Apps\Models\AutoReplyModel;
-use Apps\Models\UserModel;
-use Config\WxConfig;
 
-abstract class CommonController
+abstract class CommonController extends IndexController
 {
-    protected $user;
-
-    public function __construct()
-    {
-        $this->user = new UserModel();
-    }
-
     abstract protected function getActionController();
 
     abstract protected function handleText(array $user_info, $postObj);
@@ -75,7 +65,7 @@ abstract class CommonController
     protected function subscribe(array $user_info, $postObj)
     {
         if ($user_info['subscribe'] == 0) {
-            $this->user->set(['subcribe' => 1, 'subscribe_time' => intval($postObj->CreateTime)], array('userid' => $user_info['userid']));
+            $this->user->set(['subcribe' => 1, 'subscribe_time' => intval($postObj->CreateTime)], ['userid' => $user_info['userid']]);
         }
         return $this->autoReply(array('msg_type' => WxConstants::MSGTYPE_EVENT, 'keyword' => WxConstants::EVENT_SUBSCRIBE), $user_info);
     }
@@ -83,7 +73,7 @@ abstract class CommonController
     //取消关注事件
     protected function unsubscribe(array $user_info, $postObj)
     {
-        return $this->user->set(['subcribe' => 0, 'unsubscribe_time' => intval($postObj->CreateTime)], array('userid' => $user_info['userid']));
+        return $this->user->set(['subcribe' => 0, 'unsubscribe_time' => intval($postObj->CreateTime)], ['userid' => $user_info['userid']]);
     }
 
     //点击菜单事件

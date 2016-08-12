@@ -2,7 +2,7 @@
 
 namespace Apps\Weixin\Controllers;
 
-use Common\Libs\Functions;
+use Common\Libs\Code;
 use Common\Weixin\WxConstants;
 use Apps\Models\WaiterModel;
 
@@ -40,7 +40,7 @@ class ClientController extends CommonController
     {
         $waiter_userid = $this->getWaiter($user_info);
         $content = trim($postObj->Content);
-        $result = $this->autoReply(array('msg_type' => WxConstants::MSGTYPE_TEXT, 'keyword' => Functions::clearPunctuation($content)),$user_info);
+        $result = $this->autoReply(array('msg_type' => WxConstants::MSGTYPE_TEXT, 'keyword' => Code::clearPunctuation($content)),$user_info);
         if (empty($result)) {
             $data = $user_info['userid'] . '号用户' . $user_info['nickname'] . '（' . $user_info['current_city'] . '）：' . $content;
             $this->user->sendMessage($waiter_userid, WxConstants::MSGTYPE_TEXT, $data);

@@ -21,9 +21,4 @@ class DbConfig
     const DB_CODE = 'utf8mb4'; //数据库编码
     const DB_PCONNECT = false; //是否长连接
     const DB_PREFIX = 'wb_'; //数据库表前缀
-
-    const REDIS_KEY_ACCESS_TOKEN = 'access_token';
-    const REDIS_EXPIRE_ACCESS_TOKEN = 7200;
-    const REDIS_KEY_JSAPI_TICKET = 'jsapi_ticket';
-    const REDIS_EXPIRE_JSAPI_TICKET = 7200;
 }

@@ -3,7 +3,7 @@
 namespace Apps\Weixin\Controllers;
 
 use Apps\Models\MenuModel;
-use Common\Libs\Functions;
+use Common\Libs\File;
 use Common\Weixin\WxConstants;
 
 class AdminActionController extends WaiterActionController
@@ -13,7 +13,7 @@ class AdminActionController extends WaiterActionController
     {
         $menu = new MenuModel();
         $menu = $menu->get($message);
-        $feedback = $this->user->weixin->createMenu($menu);
+        $feedback = $this->weixin->createMenu($menu);
         return array('type' => WxConstants::MSGTYPE_TEXT, 'content' => $feedback['errmsg']);
     }
 
@@ -37,7 +37,7 @@ class AdminActionController extends WaiterActionController
     protected function refresh($dir = null)
     {
         if (empty($dir)) $dir = ROOT . 'Apps' . DIRECTORY_SEPARATOR . 'Html' . DIRECTORY_SEPARATOR . 'Cache';
-        Functions::delAllFiles($dir);
+        File::delAllFiles($dir);
         return ['type' => WxConstants::MSGTYPE_TEXT, 'content' => '已成功清空Twig缓存'];
     }
 }

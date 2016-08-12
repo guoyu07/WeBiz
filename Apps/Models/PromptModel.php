@@ -2,28 +2,18 @@
 
 namespace Apps\Models;
 
-use Common\Drivers\RedisBase;
-use Config\DbConfig;
 
-class PromptModel
+class PromptModel extends CommonModel
 {
-    protected $redis;
-    protected $key;
-
-    public function __construct()
-    {
-        $this->redis = RedisBase::getSingleton(DbConfig::get('redis'));
-        $this->key = 'keyword';
-    }
+    protected $key = 'keyword';
 
     public function set($keyword)
     {
-        return $this->redis->zIncrBy($this->key, 1,$keyword);
+        return self::$redis->zIncrBy($this->key, 1, $keyword);
     }
 
     public function get($num)
     {
-        $keywords = $this->redis->zRangeByScore($this->key, 0, $num);
-        return $keywords;
+        return self::$redis->zRangeByScore($this->key, 0, $num);
     }
 }

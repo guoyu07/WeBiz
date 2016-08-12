@@ -4,7 +4,7 @@ namespace Apps\Weixin\Controllers;
 
 use Common\Weixin\WxConstants;
 use Common\Weixin\WxResponse;
-use Config\WxConfig;
+use Config\AppConfig;
 use Apps\Models\RecordModel;
 use Apps\Models\UserModel;
 
@@ -28,28 +28,35 @@ class IndexController
     {
         $user = new UserModel();
         $user_info = $user->get(array('openid' => trim($postObj->FromUserName)));
-        if ($user_info) {
-            $this->storeRecord($postObj, $user_info['userid']);
-            $to_userid = $user->getExpert($user_info['userid']);
-            if (empty($to_userid) || trim($postObj->MsgType) == WxConstants::MSGTYPE_EVENT || !WxConfig::ALLOW_ONE_ON_ONE) {
-                switch ($user_info['groupid']) {
-                    case WxConfig::USER_ADMIN:
-                        $controller = new AdminController();
-                        break;
-                    case WxConfig::USER_WAITER:
-                        $controller = new WaiterController();
-                        break;
-                    default:
-                        $controller = new ClientController();
-                        break;
-                }
-                $result = $controller->reply($user_info, $postObj);
-            } else {
-                $result = $user->transfer($user_info, $postObj, intval($to_userid));
-            }
-        } else {
-            $result = array('type' => WxConstants::MSGTYPE_TEXT, 'content' => '抱歉，暂时无法获取您的用户信息，不能为您提供服务，请稍候再试。');
+
+        //如果无法获取用户基本信息返回错误
+        if (empty($user_info)) {
+            $content = '抱歉，暂时无法获取您的用户信息，不能为您提供服务，请稍候再试。';
+            return array('type' => WxConstants::MSGTYPE_TEXT, 'content' => $content);
         }
+
+        //存储用户互动记录
+        $this->storeRecord($postObj, $user_info['userid']);
+
+        //判断是否有绑定对话对象
+        $to_userid = $user->getPartner($user_info['userid']);
+        if (empty($to_userid) || trim($postObj->MsgType) == WxConstants::MSGTYPE_EVENT || !AppConfig::ALLOW_ONE_ON_ONE) {
+            switch ($user_info['groupid']) {
+                case AppConfig::USER_ADMIN:
+                    $controller = new AdminController();
+                    break;
+                case AppConfig::USER_WAITER:
+                    $controller = new WaiterController();
+                    break;
+                default:
+                    $controller = new ClientController();
+                    break;
+            }
+            $result = $controller->reply($user_info, $postObj);
+        } else {
+            $result = $user->transfer($postObj, intval($to_userid));
+        }
+
         $result = is_array($result) ? WxResponse::response($postObj, $result['content'], $result['type']) : '';
         return $result;
     }

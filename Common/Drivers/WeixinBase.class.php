@@ -1,9 +1,10 @@
 <?php
 
-namespace Common\Weixin;
+namespace Common\Drivers;
 
 use Common\Libs\Http;
 use Common\Log\Log;
+use Common\Weixin\WxApi;
 
 class WeixinBase extends WxApi
 {
@@ -12,6 +13,10 @@ class WeixinBase extends WxApi
     protected $appid;
     protected $appsecret;
     protected $redis;
+    protected $access_token_key = 'access_token';
+    protected $access_token_expire = 7200;
+    protected $ticket_key = 'jsapi_ticket';
+    protected $ticket_expire = 7200;
 
     private function __construct()
     {
@@ -33,7 +38,7 @@ class WeixinBase extends WxApi
 
     private function _setRedis($redis)
     {
-        $this->redis = $redis;
+        self::$redis = $redis;
     }
 
     public static function getWeixin($appid, $appsecret, $redis = null)
@@ -50,12 +55,12 @@ class WeixinBase extends WxApi
     protected function getAccessToken($flush = false)
     {
         if (!$flush && isset(self::$instance->redis)) {
-            $result = $this->_getFromCache('access_token');
+            $result = $this->_getFromCache($this->access_token_key);
         }
         if (!empty($result)) return $result;
         $result = $this->_getAccessTokenFromMp();
         if (!empty($result['access_token'])) {
-            if (isset(self::$instance->redis)) $this->_setToCache('access_token', $result['access_token'], 7200);
+            if (isset(self::$instance->redis)) $this->_setToCache($this->access_token_key, $result['access_token'], $this->access_token_expire);
             return $result['access_token'];
         }
         return false;
@@ -134,12 +139,12 @@ class WeixinBase extends WxApi
     protected function getJsApiTicket($flush = false)
     {
         if (!$flush && isset($redis)) {
-            $result = $this->_getFromCache('jsapi_ticket');
+            $result = $this->_getFromCache($this->ticket_key);
         }
         if (!empty($result)) return $result;
         $result = $this->_getJsApiTicketFromMp();
         if (!empty($result['ticket'])) {
-            if (isset(self::$instance->redis)) $this->_setToCache('jsapi_ticket', $result['ticket'], 7200);
+            if (isset(self::$instance->redis)) $this->_setToCache($this->ticket_key, $result['ticket'], $this->ticket_expire);
             return $result['ticket'];
         }
         return false;
@@ -175,12 +180,17 @@ class WeixinBase extends WxApi
     //微信服务器反馈信息处理
     protected function feedback($post)
     {
+        //发起http请求获取服务器返回
         $result = Http::request($post);
         $result = json_decode($result, true);
+
+        //如果错误码不为空
         if (!empty($result['errcode'])) {
             $data = is_string($post) ? $post : json_encode($post, JSON_UNESCAPED_UNICODE);
             $log = "curl_data: $data, " . 'errcode: ' . $result['errcode'] . ', errmsg: ' . $result['errmsg'];
             $this->logError($log);
+
+            //如果access_token错误则重新从服务器获取access_token并替换后再次请求
             $errorno = array(40001, 40014, 42001, 42007);
             if (in_array(intval($result['errcode']), $errorno)) {
                 $pattern = '/access_token=([\w\-]+)(&|$)/';

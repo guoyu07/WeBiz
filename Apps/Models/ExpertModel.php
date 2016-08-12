@@ -4,9 +4,9 @@ namespace Apps\Models;
 
 class ExpertModel extends CommonModel
 {
-    public function get($where = null)
+    public function get($where = false)
     {
-        return $where ? $this->db->where($where)->order('status DESC')->select($this->table_name) : $this->db->order('status DESC')->select($this->table_name);
+        return $where ? self::$db->where($where)->order('status DESC')->select($this->table_name) : self::$db->order('status DESC')->select($this->table_name);
     }
 
     public function getCustomData($where = null)

@@ -6,7 +6,7 @@ class VideoModel extends CommonModel
 {
     public function get($where = null)
     {
-        return empty($where) ? $this->db->order('live DESC')->select($this->table_name) : $this->db->where($where)->order('live DESC')->select($this->table_name);
+        return empty($where) ? self::$db->order('live DESC')->select($this->table_name) : self::$db->where($where)->order('live DESC')->select($this->table_name);
     }
 
     public function getCustomData($where, $sub = true)

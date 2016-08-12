@@ -9,17 +9,17 @@ class UserModel extends CommonModel
     public function get($where)
     {
         if (!empty($where['userid'])) {
-            $result = $this->redis->hGet('user' . $where['userid']);
+            $result = self::$redis->hGet('user' . $where['userid']);
         } elseif (!empty($where['openid'])) {
-            $userid = $this->redis->get($where['openid']);
-            $result = $userid ? $this->redis->hGet('user' . $userid) : null;
+            $userid = self::$redis->get($where['openid']);
+            $result = $userid ? self::$redis->hGet('user' . $userid) : null;
         }
         if (empty($result)) {
-            $result = $this->db->where($where)->select($this->table_name);
+            $result = self::$db->where($where)->select($this->table_name);
             if ($result) {
                 $result = $result[0];
-                $this->redis->set($result['openid'], $result['userid']);
-                $this->redis->hMset('user' . $result['userid'], $result);
+                self::$redis->set($result['openid'], $result['userid']);
+                self::$redis->hMset('user' . $result['userid'], $result);
                 return $result;
             } else {
                 return empty($where['openid']) ? false : $this->_addUser($where['openid']);
@@ -31,12 +31,12 @@ class UserModel extends CommonModel
 
     public function set($data, $where = null)
     {
-        $result = empty($where) ? $this->add($data) : $this->db->where($where)->update($this->table_name, $data);
+        $result = empty($where) ? $this->add($data) : self::$db->where($where)->update($this->table_name, $data);
         if (!empty($data['userid'])) {
-            return $this->redis->hMset('user' . $data['userid'], $data);
+            return self::$redis->hMset('user' . $data['userid'], $data);
         }
-        if (!empty($where['userid'])){
-            return $this->redis->hMset('user' . $where['userid'], $data);
+        if (!empty($where['userid'])) {
+            return self::$redis->hMset('user' . $where['userid'], $data);
         }
         return $result;
     }
@@ -57,17 +57,17 @@ class UserModel extends CommonModel
     public function sendMessage($to_userid, $type, $content)
     {
         $openid = $this->getOpenidByUserid($to_userid);
-        return $openid ? $this->weixin->sendMessage($openid, $type, $content) : false;
+        return $openid ? self::$weixin->sendMessage($openid, $type, $content) : false;
     }
 
     public function getOpenidByUserid($userid)
     {
-        $openid = $this->redis->hGet('user' . $userid);
+        $openid = self::$redis->hGet('user' . $userid);
         if (empty($openid)) {
             $user_info = $this->get(array('userid' => $userid));
             if ($user_info) {
                 $openid = $user_info['openid'];
-                $this->redis->hMset('user' . $userid, $user_info);
+                self::$redis->hMset('user' . $userid, $user_info);
             } else {
                 return false;
             }
@@ -80,37 +80,32 @@ class UserModel extends CommonModel
     protected function getUserIdByOpenid($openid)
     {
         $key = trim($openid);
-        $userid = $this->redis->get($key);
+        $userid = self::$redis->get($key);
         if (empty($userid)) {
             $user_info = $this->get(array('openid' => $openid));
             $userid = $user_info['userid'];
-            $this->redis->set($key, $userid);
+            self::$redis->set($key, $userid);
         }
         return $userid;
     }
 
     public function bind($client, $expert, $expire = null)
     {
-        return $this->bindInRedis($client, $expert, $expire);
+        $result = self::$redis->set('user' . $expert . '_partner', $client, $expire);
+        return $result && self::$redis->set('user' . $client . '_partner', $expert, $expire);
     }
 
-    protected function bindInRedis($client, $expert, $expire = null)
+    public function getPartner($userid)
     {
-        $result = $this->redis->set('user' . $expert . '_waiter', $client, $expire);
-        return $result && $this->redis->set('user' . $client . '_waiter', $expert, $expire);
+        return self::$redis->get('user' . $userid . '_partner');
     }
 
-    public function getExpert($userid)
-    {
-        return $this->redis->get('user' . $userid . '_waiter');
-    }
-
-    public function transfer(array $user_info, $postObj, $to_userid)
+    public function transfer($postObj, $to_userid)
     {
         //$this->sendMessage($to_userid, WxConstants::MSGTYPE_TEXT, $user_info['nickname'] . '：');
-        $result = $this->weixin->transfer($postObj, $this->getOpenidByUserid($to_userid));
+        $result = self::$weixin->transfer($postObj, $this->getOpenidByUserid($to_userid));
         if (!empty($result['errcode'])) {
-            return array('type' => WxConstants::MSGTYPE_TEXT, 'content' => '未能成功转发, 按照微信的要求, 只能发送语音、文字和图片, 其他格式的内容不可以发送哦');
+            return array('type' => WxConstants::MSGTYPE_TEXT, 'content' => '非常抱歉, 按照微信的要求, 只能发送语音、文字和图片, 其他格式的内容我看到不到哦');
         } else {
             return '';
         }
@@ -120,12 +115,11 @@ class UserModel extends CommonModel
     private function _addUser($openid)
     {
         $user_info = $this->_getFromWeixin($openid);
-        //$user_info['nickname'] = urlencode($user_info['nickname']);
         return $this->set($user_info) ? $this->get(array('openid' => $openid)) : null;
     }
 
     private function _getFromWeixin($openid)
     {
-        return $this->weixin->getUser($openid);
+        return self::$weixin->getUser($openid);
     }
 }

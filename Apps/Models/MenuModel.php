@@ -9,7 +9,7 @@ class MenuModel extends CommonModel
         $table = $this->table_name . $id;
         $type = array('view' => 'url', 'click' => 'key');
         $button = [];
-        $data = $this->db->field('type, name, value, group')->select($table);
+        $data = self::$db->field('type, name, value, group')->select($table);
         foreach ($data as $v) {
             $group = $v['group'];
             if (!array_key_exists($group, $button)) {

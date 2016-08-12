@@ -2,9 +2,9 @@
 
 namespace Apps\Weixin\Controllers;
 
-use Common\Libs\Functions;
+use Common\Libs\Code;
 use Common\Weixin\WxConstants;
-use Config\WxConfig;
+use Config\AppConfig;
 
 class WaiterController extends CommonController
 {
@@ -19,7 +19,7 @@ class WaiterController extends CommonController
             $action = $this->getActionController();
             $result = $action->doAction($data);
         } else {
-            $result = $this->autoReply(array('msg_type' => WxConstants::MSGTYPE_TEXT, 'keyword' => Functions::clearPunctuation($postObj->Content)), $user_info);
+            $result = $this->autoReply(array('msg_type' => WxConstants::MSGTYPE_TEXT, 'keyword' => Code::clearPunctuation($postObj->Content)), $user_info);
         }
         return $result;
     }
@@ -44,9 +44,9 @@ class WaiterController extends CommonController
     //分析输入内容
     protected function analyzeContent($content)
     {
-        $text = WxConfig::COMMAND_TEXT;
-        $image = $text . WxConfig::COMMAND_IMAGE;
-        $voice = $text . WxConfig::COMMAND_VOICE;
+        $text = AppConfig::COMMAND_TEXT;
+        $image = $text . AppConfig::COMMAND_IMAGE;
+        $voice = $text . AppConfig::COMMAND_VOICE;
         $pattern = '/^([A-Za-z0-9]+)(\\' . $image . '|\\' . $voice . '|\\' . $text . ')(.*)$/';
         if (preg_match($pattern, $content, $data)) {
             switch ($data[2]) {
@@ -84,7 +84,7 @@ class WaiterController extends CommonController
             '妈的', '丫的', '妈蛋', '生殖器', '阴茎', '阴道', '性交', '同性恋', '操你',
             '混蛋', '傻逼', '你妹的', '找死'
         );
-        $message = Functions::clearPunctuation($message);
+        $message = Code::clearPunctuation($message);
         $badword = '';
         foreach ($dict as $f) {
             if ($message == $f || stripos($message, $f)) $badword .= '【' . $f . '】，';

@@ -7,11 +7,11 @@ class ArticleModel extends CommonModel
     public function get($where = null)
     {
         $tags = new TagsModel();
-        $result = empty($where) ? $this->db->select($this->table_name) : $this->db->where($where)->select($this->table_name);
+        $result = empty($where) ? self::$db->select($this->table_name) : self::$db->where($where)->select($this->table_name);
         $count = count($result);
         for ($i = 0; $i < $count; $i++) {
-            $result[$i]['tags'] = $tags->getTagNames($result[$i]['tags'], 'answers');
-            $result[$i]['author_url'] = $_SERVER['PHP_SELF'] . '?c=answers&author=' . urlencode($result[$i]['author']);
+            $result[$i]['tags'] = $tags->getTagNames($result[$i]['tags'], 'article');
+            $result[$i]['author_url'] = $_SERVER['PHP_SELF'] . '?c=article&author=' . urlencode($result[$i]['author']);
         }
         return $result;
     }
