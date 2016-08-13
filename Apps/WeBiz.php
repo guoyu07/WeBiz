@@ -14,8 +14,21 @@ class WeBiz
         spl_autoload_register(array(__CLASS__, 'autoload'));
 
         //判断是微信访问还是网页访问并启动不同的控制器
-        $controller = self::checkSignature(AppConfig::WEIXIN_TOKEN) ? new Weixin() : new Html();
+        $is_weixin = self::checkSignature(AppConfig::WEIXIN_TOKEN);
+
+        if (AppConfig::VALID_MODE) self::valid($is_weixin);
+
+        $controller = $is_weixin ? new Weixin() : new Html();
         $controller->start();
+    }
+
+    public static function valid($check = false)
+    {
+        if ($check) {
+            $echoStr = $_GET["echostr"];
+            echo $echoStr;
+        }
+        exit;
     }
 
     protected static function autoload($class)

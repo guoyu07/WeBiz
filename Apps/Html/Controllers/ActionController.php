@@ -8,11 +8,8 @@ use Apps\Models\UserModel;
 
 class ActionController
 {
-    protected $user;
-
     public function start()
     {
-        $this->user = new UserModel();
         $expert = new ExpertModel();
         $expert_info = $expert->get(array('id' => $this->getExpertId()))[0];
         $client_userid = $this->getClientUserid();

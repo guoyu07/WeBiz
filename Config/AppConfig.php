@@ -4,6 +4,9 @@ namespace Config;
 
 class AppConfig
 {
+    //验证模式还是生产环境
+    const VALID_MODE = false;
+
     //用户身份定义
     const USER_ADMIN = 100;
     const USER_WAITER = 101;
