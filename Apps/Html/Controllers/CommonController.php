@@ -117,7 +117,7 @@ abstract class CommonController
     protected function getTwig()
     {
         if (empty($this->twig)) {
-            $loader = new \Twig_Loader_Filesystem(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Views');
+            $loader = new \Twig_Loader_Filesystem(TEMPLATE_DIR);
             $this->twig = new \Twig_Environment($loader, array(
                 'cache' => CACHE_DIR,
             ));
