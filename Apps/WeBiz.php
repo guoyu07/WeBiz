@@ -22,16 +22,7 @@ class WeBiz
         $controller->start();
     }
 
-    public static function valid($check = false)
-    {
-        if ($check) {
-            $echoStr = $_GET["echostr"];
-            echo $echoStr;
-        }
-        exit;
-    }
-
-    protected static function autoload($class)
+    private static function autoload($class)
     {
 
         if (0 !== strpos($class, 'Twig')) {
@@ -53,6 +44,15 @@ class WeBiz
                 require $file;
             }
         }
+    }
+
+    private static function valid($check = false)
+    {
+        if ($check) {
+            $echoStr = $_GET["echostr"];
+            echo $echoStr;
+        }
+        exit;
     }
 
     //检查签名

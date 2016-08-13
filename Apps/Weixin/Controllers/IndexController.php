@@ -17,17 +17,17 @@ class IndexController
         $postStr = $GLOBALS["HTTP_RAW_POST_DATA"];
         if (isset($postStr)) {
             $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
-            $reply = $this->router($postObj);
+            $result = $this->router($postObj);
+            $result = is_array($result) ? WxResponse::response($postObj, $result['content'], $result['type']) : '';
         } else {
-            $reply = '';
+            $result = '';
         }
-        echo $reply;
+        echo $result;
     }
 
     protected function router($postObj)
     {
-        $user = new UserModel();
-        $user_info = $user->get(array('openid' => trim($postObj->FromUserName)));
+        $user_info = $this->getUser(trim($postObj->FromUserName));
 
         //如果无法获取用户基本信息返回错误
         if (empty($user_info)) {
@@ -39,29 +39,38 @@ class IndexController
         $this->storeRecord($postObj, $user_info['userid']);
 
         //判断是否有绑定对话对象
-        $to_userid = $user->getPartner($user_info['userid']);
+        $to_userid = $this->user->getPartner($user_info['userid']);
         if (empty($to_userid) || trim($postObj->MsgType) == WxConstants::MSGTYPE_EVENT || !AppConfig::ALLOW_ONE_ON_ONE) {
-            switch ($user_info['groupid']) {
-                case AppConfig::USER_ADMIN:
-                    $controller = new AdminController();
-                    break;
-                case AppConfig::USER_WAITER:
-                    $controller = new WaiterController();
-                    break;
-                default:
-                    $controller = new ClientController();
-                    break;
-            }
+            $controller = $this->getController($user_info['groupid']);
             $result = $controller->reply($user_info, $postObj);
         } else {
-            $result = $user->transfer($postObj, intval($to_userid));
+            $result = $this->user->transfer($postObj, intval($to_userid));
         }
-
-        $result = is_array($result) ? WxResponse::response($postObj, $result['content'], $result['type']) : '';
         return $result;
     }
 
-    protected function storeRecord($postObj, $userid)
+    protected function getUser($openid)
+    {
+        $this->user = new UserModel();
+        return $this->user->get(['openid' => $openid]);
+    }
+
+    private function getController($groupid){
+        switch ($groupid) {
+            case AppConfig::USER_ADMIN:
+                $controller = new AdminController();
+                break;
+            case AppConfig::USER_WAITER:
+                $controller = new WaiterController();
+                break;
+            default:
+                $controller = new ClientController();
+                break;
+        }
+        return $controller;
+    }
+
+    private function storeRecord($postObj, $userid)
     {
         $record = new RecordModel();
         $data = array(

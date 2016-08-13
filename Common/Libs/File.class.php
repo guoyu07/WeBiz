@@ -11,13 +11,14 @@ class File
             if ($file != "." && $file != "..") {
                 $fullpath = $dir . DIRECTORY_SEPARATOR . $file;
                 if (!is_dir($fullpath)) {
-                    unlink($fullpath);
+                    if (unlink($fullpath) == false) return false;
                 } else {
                     self::delAllFiles($fullpath);
-                    rmdir($fullpath);
+                    if (rmdir($fullpath) == false) return false;
                 }
             }
         }
         closedir($dh);
+        return true;
     }
 }

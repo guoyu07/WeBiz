@@ -8,6 +8,13 @@ use Apps\Models\UserModel;
 
 class ActionController
 {
+    protected $user;
+
+    public function __construct()
+    {
+        $this->user = new UserModel();
+    }
+
     public function start()
     {
         $expert = new ExpertModel();

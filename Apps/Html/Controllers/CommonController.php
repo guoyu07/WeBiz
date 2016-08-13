@@ -2,6 +2,7 @@
 
 namespace Apps\Html\Controllers;
 
+use Apps\Models\ActionModel;
 use Apps\Models\PageModel;
 use Apps\Models\PromptModel;
 use Apps\Models\UserModel;
@@ -56,7 +57,8 @@ abstract class CommonController
 
     protected function getJsApiParmeters()
     {
-        return $this->user->weixin->getJsApiParameters();
+        $action = new ActionModel();
+        return $action->getJsApiParameters();
     }
 
     protected function getShareData()

@@ -37,4 +37,14 @@ class MenuModel extends CommonModel
         $menu = json_encode($menu, JSON_UNESCAPED_UNICODE);
         return $menu;
     }
+
+    public function createMenu($menu_id = null)
+    {
+        return self::$weixin->createMenu($this->get($menu_id));
+    }
+
+    public function delMenu($menu_id = null)
+    {
+        return self::$weixin->delMenu($menu_id);
+    }
 }

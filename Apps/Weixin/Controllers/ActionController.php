@@ -2,7 +2,6 @@
 
 namespace Apps\Weixin\Controllers;
 
-use Apps\Models\UserModel;
 use Common\Weixin\WxConstants;
 
 class ActionController
