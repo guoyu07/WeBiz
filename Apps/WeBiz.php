@@ -24,7 +24,6 @@ class WeBiz
 
     private static function autoload($class)
     {
-
         if (0 !== strpos($class, 'Twig')) {
             //转义反斜杠
             if (0 !== strpos('\\', $class)) {
