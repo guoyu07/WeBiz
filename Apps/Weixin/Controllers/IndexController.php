@@ -25,7 +25,7 @@ class IndexController
         echo $result;
     }
 
-    protected function router($postObj)
+    private function router($postObj)
     {
         $user_info = $this->getUser(trim($postObj->FromUserName));
 
@@ -49,7 +49,7 @@ class IndexController
         return $result;
     }
 
-    protected function getUser($openid)
+    private function getUser($openid)
     {
         $this->user = new UserModel();
         return $this->user->get(['openid' => $openid]);
