@@ -8,9 +8,9 @@ class AppConfig
     const VALID_MODE = false;
 
     //用户身份定义
-    const USER_ADMIN = 100;
-    const USER_WAITER = 101;
-    const USER_CLIENT = 0;
+    const USER_ADMIN = 100; //管理员组
+    const USER_WAITER = 101; //客服组
+    const USER_CLIENT = 0; //用户组
 
     //微信客服设置
     const COMMAND_TEXT = '+'; //发送文本消息命令符

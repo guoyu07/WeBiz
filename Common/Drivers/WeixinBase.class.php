@@ -8,8 +8,7 @@ use Common\Weixin\WxApi;
 
 class WeixinBase extends WxApi
 {
-    protected static $weixin = null;
-    protected static $instance = null;
+    private static $_instance = null;
     protected $appid;
     protected $appsecret;
     protected $redis;
@@ -38,29 +37,29 @@ class WeixinBase extends WxApi
 
     private function _setRedis($redis)
     {
-        self::$redis = $redis;
+        $this->redis = $redis;
     }
 
     public static function getWeixin($appid, $appsecret, $redis = null)
     {
-        if (!self::$instance instanceof self) {
-            self::$instance = new self();
-            self::$instance->_setAppId($appid);
-            self::$instance->_setAppSecret($appsecret);
-            self::$instance->_setRedis($redis);
+        if (null === self::$_instance) {
+            self::$_instance = new self();
+            self::$_instance->_setAppId($appid);
+            self::$_instance->_setAppSecret($appsecret);
+            self::$_instance->_setRedis($redis);
         }
-        return self::$instance;
+        return self::$_instance;
     }
 
     protected function getAccessToken($flush = false)
     {
-        if (!$flush && isset(self::$instance->redis)) {
+        if (!$flush && isset($this->redis)) {
             $result = $this->_getFromCache($this->access_token_key);
         }
         if (!empty($result)) return $result;
         $result = $this->_getAccessTokenFromMp();
         if (!empty($result['access_token'])) {
-            if (isset(self::$instance->redis)) $this->_setToCache($this->access_token_key, $result['access_token'], $this->access_token_expire);
+            if (isset($this->redis)) $this->_setToCache($this->access_token_key, $result['access_token'], $this->access_token_expire);
             return $result['access_token'];
         }
         return false;
@@ -74,12 +73,12 @@ class WeixinBase extends WxApi
 
     private function _getFromCache($key)
     {
-        return self::$instance->redis->get($key);
+        return $this->redis->get($key);
     }
 
     private function _setToCache($key, $value, $expire = null)
     {
-        return self::$instance->redis->set($key, $value, $expire);
+        return $this->redis->set($key, $value, $expire);
     }
 
     public function getJsApiParameters()
@@ -144,7 +143,7 @@ class WeixinBase extends WxApi
         if (!empty($result)) return $result;
         $result = $this->_getJsApiTicketFromMp();
         if (!empty($result['ticket'])) {
-            if (isset(self::$instance->redis)) $this->_setToCache($this->ticket_key, $result['ticket'], $this->ticket_expire);
+            if (isset($this->redis)) $this->_setToCache($this->ticket_key, $result['ticket'], $this->ticket_expire);
             return $result['ticket'];
         }
         return false;
@@ -210,6 +209,6 @@ class WeixinBase extends WxApi
 
     public function close()
     {
-        if (!is_null(self::$weixin)) self::$weixin = null;
+        if (!is_null(self::$_instance)) self::$_instance = null;
     }
 }

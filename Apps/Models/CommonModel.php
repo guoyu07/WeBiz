@@ -20,7 +20,7 @@ abstract class CommonModel
     {
         self::$db = $this->getDb();
         self::$redis = $this->getRedis();
-        self::$weixin = $this->getWexin();
+        self::$weixin = $this->getWeixin();
         $this->table_name = $this->getTableName();
     }
 
@@ -57,7 +57,7 @@ abstract class CommonModel
         return RedisBase::getSingleton($dsn);
     }
 
-    protected function getWexin()
+    protected function getWeixin()
     {
         return WeixinBase::getWeixin(WxPayConfig::APPID, WxPayConfig::APPSECRET, self::$redis);
     }

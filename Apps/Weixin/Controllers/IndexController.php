@@ -12,6 +12,11 @@ class IndexController
 {
     protected $user;
 
+    public function __construct()
+    {
+        $this->user = new UserModel();
+    }
+
     public function start()
     {
         $postStr = $GLOBALS["HTTP_RAW_POST_DATA"];
@@ -51,7 +56,6 @@ class IndexController
 
     private function getUser($openid)
     {
-        $this->user = new UserModel();
         return $this->user->get(['openid' => $openid]);
     }
 

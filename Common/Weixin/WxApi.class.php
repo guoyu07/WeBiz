@@ -63,7 +63,6 @@ abstract class WxApi extends WxAdvance
         return $user_list;
     }
 
-
     /** 标签管理方法 */
     //获取全部标签
     public function getAllTags()

@@ -8,21 +8,16 @@ class RedisBase
 {
     private static $_instance = null;
     private static $_redis = null;
-    private $_server;
-    private $_port;
-    private $_pass;
-    private $_database;
-    private $_prefix;
 
-    private function __construct()
+    private function __construct(array $dsn)
     {
         if (null === self::$_redis) {
             try {
                 $redis = new \Redis();
-                $redis->connect($this->_server,$this->_port);
-                $redis->auth($this->_pass);
-                $redis->select($this->_database);
-                $redis->setOption($redis::OPT_PREFIX, $this->_prefix);
+                $redis->connect($dsn['REDIS_SERVER'], $dsn['REDIS_PORT']);
+                $redis->auth($dsn['REDIS_PASSWORD']);
+                $redis->select($dsn['REDIS_DATABASE']);
+                $redis->setOption($redis::OPT_PREFIX, $dsn['REDIS_PREFIX']);
                 self::$_redis = $redis;
             } catch (\RedisException $e) {
                 $errMsg = $e->getMessage();
@@ -34,13 +29,8 @@ class RedisBase
 
     public static function getSingleton(array $dsn)
     {
-        if (!self::$_instance instanceof self) {
-            self::$_instance = new self();
-            self::$_instance->_setServer($dsn['REDIS_SERVER']);
-            self::$_instance->_setPort($dsn['REDIS_PORT']);
-            self::$_instance->_setPassword($dsn['REDIS_PASSWORD']);
-            self::$_instance->_setDatabase($dsn['REDIS_DATABASE']);
-            self::$_instance->_setPrefix($dsn['REDIS_PREFIX']);
+        if (null === self::$_instance) {
+            self::$_instance = new self($dsn);
         }
         return self::$_instance;
     }
@@ -49,35 +39,10 @@ class RedisBase
     {
     }
 
-    private function _setServer($server)
-    {
-        $this->_server = $server;
-    }
-
-    private function _setPort($port)
-    {
-        $this->_port = $port;
-    }
-
-    private function _setPassword($pass)
-    {
-        $this->_pass = $pass;
-    }
-
-    private function _setDatabase($database)
-    {
-        $this->_database = $database;
-    }
-
-    private function _setPrefix($prefix)
-    {
-        $this->_prefix = $prefix;
-    }
-
     //记录错误日志
     protected function logError($msg)
     {
-        $log = Log::Init(LOG_DIR . DIRECTORY_SEPARATOR . 'wechat_errors.log');
+        $log = Log::Init(LOG_DIR . DIRECTORY_SEPARATOR . 'redis_errors.log');
         Log::WARN($msg);
     }
 

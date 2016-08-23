@@ -39,7 +39,7 @@ class WeBiz
                 }
             }
         } else {
-            if (is_file($file = TWIG_DIR . str_replace(array('_', "\0"), array('/', ''), $class) . '.php')) {
+            if (is_file($file = TWIG_DIR . DIRECTORY_SEPARATOR . str_replace(array('_', "\0"), array('/', ''), $class) . '.php')) {
                 require $file;
             }
         }

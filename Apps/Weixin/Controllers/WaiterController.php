@@ -63,9 +63,6 @@ class WaiterController extends CommonController
                             $result = ['action' => 'sendtext', 'argument' => ['touserid' => intval($data[1]), 'content' => $data[3]]];
                         }
                     } else {
-                        $logfile = LOG_DIR . DIRECTORY_SEPARATOR . 'waiter_errors.log';
-                        if (!file_exists($logfile)) fopen($logfile, "w");
-                        error_log(date("[Y-m-d H:i:s]") . json_encode($data) . "\n", 3, $logfile);
                         $result = ['action' => $data[1], 'argument' => empty($data[3]) ? null : $data[3]];
                     }
                     break;
