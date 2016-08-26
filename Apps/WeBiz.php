@@ -2,6 +2,7 @@
 
 namespace Apps;
 
+use Common\Libs\File;
 use Config\AppConfig;
 use Apps\Weixin\Controllers\IndexController as Weixin;
 use Apps\Html\Controllers\IndexController as Html;
@@ -12,6 +13,9 @@ class WeBiz
     {
         //注册自动加载函数
         spl_autoload_register(array(__CLASS__, 'autoload'));
+
+        //检查目录若不存在则建立
+        File::checkDir([LOG_DIR, WXPAY_LOG_DIR, CACHE_DIR]);
 
         //判断是微信访问还是网页访问并启动不同的控制器
         $is_weixin = self::checkSignature(AppConfig::WEIXIN_TOKEN);
