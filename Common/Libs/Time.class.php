@@ -8,8 +8,8 @@ class Time
     public static function getWeek($time = null)
     {
         if ($time === null) $time = time();
-        $weekarray = array("日", "一", "二", "三", "四", "五", "六");
-        $result = "星期" . $weekarray[date("w", $time)];
+        $week = array("日", "一", "二", "三", "四", "五", "六");
+        $result = "星期" . $week[date("w", $time)];
         return $result;
     }
 
